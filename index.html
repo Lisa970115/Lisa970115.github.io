@@ -8,57 +8,23 @@
 <body>
     <h1 style="text-align: center;">歡迎商店ﾉ</h1>
     <p >嘿嘿</p>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>線上點餐</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        .menu-item {
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            display: inline-block;
-        }
-        #cart {
-            margin-top: 20px;
-            padding: 10px;
-            border: 2px solid #000;
-        }
-    </style>
-</head>
-<body>
+    <script type="module">
+        // 1️⃣ 引入 Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    <h1>線上點餐系統</h1>
+        // 2️⃣ 設定 Firebase
+        const firebaseConfig = {
+            apiKey: "你的API金鑰",
+            authDomain: "你的專案ID.firebaseapp.com",
+            databaseURL: "https://你的專案ID.firebaseio.com",
+            projectId: "你的專案ID"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const ordersRef = ref(db, "orders");
 
-    <div id="menu">
-        <div class="menu-item">
-            <h2>漢堡</h2>
-            <p>價格：$100</p>
-            <button onclick="addToCart('漢堡', 100)">加入購物車</button>
-        </div>
-        <div class="menu-item">
-            <h2>薯條</h2>
-            <p>價格：$50</p>
-            <button onclick="addToCart('薯條', 50)">加入購物車</button>
-        </div>
-    </div>
-
-    <div id="cart">
-        <h2>購物車</h2>
-        <ul id="cart-items"></ul>
-        <p>總金額：$<span id="total">0</span></p>
-        <button onclick="checkout()">提交訂單</button>
-    </div>
-
-    <div id="order-info" style="display: none; margin-top: 20px;">
-        <h2>訂單提交成功！</h2>
-        <p>您的訂單編號是：<strong id="order-id"></strong></p>
-    </div>
-
-    <script>
+        // 3️⃣ 訂單處理邏輯
         let cart = [];
         let total = 0;
 
@@ -69,8 +35,8 @@
         }
 
         function updateCart() {
-            let cartList = document.getElementById('cart-items');
-            let totalAmount = document.getElementById('total');
+            let cartList = document.getElementById("cart-items");
+            let totalAmount = document.getElementById("total");
             cartList.innerHTML = "";
             cart.forEach((c, index) => {
                 cartList.innerHTML += `<li>${c.item} - $${c.price} <button onclick="removeFromCart(${index})">移除</button></li>`;
@@ -92,7 +58,7 @@
                             now.getHours().toString().padStart(2, '0') +
                             now.getMinutes().toString().padStart(2, '0') +
                             now.getSeconds().toString().padStart(2, '0');
-            let randomNum = Math.floor(Math.random() * 900) + 100; // 產生 100-999 之間的隨機數
+            let randomNum = Math.floor(Math.random() * 900) + 100;
             return `ORD-${timestamp}-${randomNum}`;
         }
 
@@ -103,39 +69,39 @@
             }
 
             let orderId = generateOrderId();
-            document.getElementById("order-id").innerText = orderId;
-            document.getElementById("order-info").style.display = "block";
+            let order = {
+                id: orderId,
+                items: cart,
+                total: total,
+                time: new Date().toLocaleString()
+            };
 
-            // 清空購物車
+            // 4️⃣ 將訂單存入 Firebase
+            push(ordersRef, order);
+
+            alert("訂單提交成功！您的訂單編號：" + orderId);
+
             cart = [];
             total = 0;
             updateCart();
         }
     </script>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+</head>
+<body>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyCM7H3WG-k31B70QvPFBBQMFK0Bt4cNIwU",
-    authDomain: "lisa-71d49.firebaseapp.com",
-    databaseURL: "https://lisa-71d49-default-rtdb.firebaseio.com",
-    projectId: "lisa-71d49",
-    storageBucket: "lisa-71d49.firebasestorage.app",
-    messagingSenderId: "1056184408937",
-    appId: "1:1056184408937:web:acd12192ba634eada8bbf8",
-    measurementId: "G-6SHHG5W8C4"
-  };
+    <h1>線上點餐系統</h1>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+    <div id="menu">
+        <button onclick="addToCart('漢堡', 100)">漢堡 - $100</button>
+        <button onclick="addToCart('薯條', 50)">薯條 - $50</button>
+    </div>
+
+    <div id="cart">
+        <h2>購物車</h2>
+        <ul id="cart-items"></ul>
+        <p>總金額：$<span id="total">0</span></p>
+        <button onclick="checkout()">提交訂單</button>
+    </div>
 
 </body>
 </html>
