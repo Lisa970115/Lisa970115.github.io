@@ -9,20 +9,29 @@
     <h1 style="text-align: center;">歡迎商店ﾉ</h1>
     <p >嘿嘿</p>
     <script type="module">
-        // 1️⃣ 引入 Firebase SDK
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // 2️⃣ 設定 Firebase
-        const firebaseConfig = {
-            apiKey: "你的API金鑰",
-            authDomain: "你的專案ID.firebaseapp.com",
-            databaseURL: "https://你的專案ID.firebaseio.com",
-            projectId: "你的專案ID"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const ordersRef = ref(db, "orders");
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyCM7H3WG-k31B70QvPFBBQMFK0Bt4cNIwU",
+    authDomain: "lisa-71d49.firebaseapp.com",
+    databaseURL: "https://lisa-71d49-default-rtdb.firebaseio.com",
+    projectId: "lisa-71d49",
+    storageBucket: "lisa-71d49.firebasestorage.app",
+    messagingSenderId: "1056184408937",
+    appId: "1:1056184408937:web:acd12192ba634eada8bbf8",
+    measurementId: "G-6SHHG5W8C4"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 
         // 3️⃣ 訂單處理邏輯
         let cart = [];
