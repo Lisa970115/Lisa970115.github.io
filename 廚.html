@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>後廚訂單管理</title>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: : "AIzaSyCM7H3WG-k31B70QvPFBBQMFK0Bt4cNIwU",
+            authDomain: "lisa-71d49.firebaseapp.com",
+            databaseURL: "https://lisa-71d49.firebaseio.com",
+            projectId: "lisa-71d49"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const ordersRef = ref(db, "orders");
+
+        function loadOrders() {
+            onValue(ordersRef, (snapshot) => {
+                let ordersDiv = document.getElementById("orders");
+                ordersDiv.innerHTML = "";
+                snapshot.forEach((child) => {
+                    let order = child.val();
+                    let key = child.key;
+                    ordersDiv.innerHTML += `
+                        <div>
+                            <h3>訂單編號：${order.id}</h3>
+                            <p>時間：${order.time}</p>
+                            <p>總金額：$${order.total}</p>
+                            <button onclick="removeOrder('${key}')">完成訂單</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        function removeOrder(key) {
+            remove(ref(db, "orders/" + key));
+        }
+
+        loadOrders();
+    </script>
+</head>
+<body>
+
+    <h1>後廚訂單管理</h1>
+    <div id="orders"></div>
+
+</body>
+</html>
