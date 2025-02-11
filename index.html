@@ -6,7 +6,7 @@
     <title>我的 GitHub Pages 網站</title>
 </head>
 <body>
-    <h1 style="text-align: center;">歡迎光臨商店ﾉ</h1>
+    <h1 style="text-align: center;">歡迎商店哦</h1>
     <p>嘿嘿</p>
 
     <h1>線上點餐系統</h1>
@@ -67,29 +67,18 @@
                 cartList.innerHTML += `<li>${c.item} - $${c.price} <button onclick="removeFromCart(${index})">移除</button></li>`;
             });
             totalAmount.innerText = total;
-            console.log("購物車內容：", cart);
-            console.log("總金額：", total);
+            console.log("購物車內容更新後：", cart);  // 檢查更新後的購物車內容
+            console.log("總金額更新後：", total);  // 檢查更新後的總金額
         }
 
         // Remove item from cart
         function removeFromCart(index) {
             console.log("移除商品索引：", index);  // 確認移除的是哪個商品
+            console.log("移除前的購物車內容：", cart);  // 檢查移除前的購物車內容
             total -= cart[index].price;  // 減去商品價格
             cart.splice(index, 1);  // 移除商品
+            console.log("移除後的購物車內容：", cart);  // 檢查移除後的購物車內容
             updateCart();  // 更新購物車顯示
-        }
-
-        // Generate order ID
-        function generateOrderId() {
-            let now = new Date();
-            let timestamp = now.getFullYear().toString() +
-                            (now.getMonth() + 1).toString().padStart(2, '0') +
-                            now.getDate().toString().padStart(2, '0') +
-                            now.getHours().toString().padStart(2, '0') +
-                            now.getMinutes().toString().padStart(2, '0') +
-                            now.getSeconds().toString().padStart(2, '0');
-            let randomNum = Math.floor(Math.random() * 900) + 100;
-            return `ORD-${timestamp}-${randomNum}`;
         }
 
         // Checkout
