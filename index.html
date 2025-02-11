@@ -6,7 +6,7 @@
     <title>我的 GitHub Pages 網站</title>
 </head>
 <body>
-    <h1 style="text-align: center;">歡迎商店</h1>
+    <h1 style="text-align: center;">歡迎我商店ﾉ</h1>
     <p>嘿嘿</p>
 
     <h1>線上點餐系統</h1>
@@ -24,7 +24,7 @@
     </div>
 
     <script type="module">
-        // Import Firebase functions
+        // Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-analytics.js";
         import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.3.0/firebase-database.js";
@@ -46,18 +46,19 @@
         const analytics = getAnalytics(app);
         const database = getDatabase(app);
 
-        // Cart and total variables
+        // Cart variables
         let cart = [];
         let total = 0;
 
-        // Function to add item to cart
+        // Add item to cart
         function addToCart(item, price) {
+            console.log(`添加商品：${item}, 價格：${price}`);  // 顯示添加的商品和價格
             cart.push({ item, price });
             total += price;
             updateCart();
         }
 
-        // Function to update the cart display
+        // Update the cart display
         function updateCart() {
             let cartList = document.getElementById("cart-items");
             let totalAmount = document.getElementById("total");
@@ -66,16 +67,18 @@
                 cartList.innerHTML += `<li>${c.item} - $${c.price} <button onclick="removeFromCart(${index})">移除</button></li>`;
             });
             totalAmount.innerText = total;
+            console.log("購物車內容：", cart);  // 顯示當前購物車內容
+            console.log("總金額：", total);  // 顯示總金額
         }
 
-        // Function to remove item from cart
+        // Remove item from cart
         function removeFromCart(index) {
             total -= cart[index].price;
             cart.splice(index, 1);
             updateCart();
         }
 
-        // Function to generate order ID
+        // Generate order ID
         function generateOrderId() {
             let now = new Date();
             let timestamp = now.getFullYear().toString() +
@@ -88,7 +91,7 @@
             return `ORD-${timestamp}-${randomNum}`;
         }
 
-        // Function to handle checkout
+        // Checkout
         function checkout() {
             if (cart.length === 0) {
                 alert("購物車是空的，請選擇商品！");
@@ -103,19 +106,19 @@
                 time: new Date().toLocaleString()
             };
 
-            // Save order to Firebase
+            // Save to Firebase
             const ordersRef = ref(database, 'orders');
             push(ordersRef, order);
 
             alert("訂單提交成功！您的訂單編號：" + orderId);
 
-            // Clear the cart
+            // Clear cart
             cart = [];
             total = 0;
             updateCart();
         }
 
-        // Wait until DOM is fully loaded before adding event listeners
+        // Add event listeners to buttons after DOM is fully loaded
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('burgerBtn').addEventListener('click', () => addToCart('漢堡', 100));
             document.getElementById('friesBtn').addEventListener('click', () => addToCart('薯條', 50));
