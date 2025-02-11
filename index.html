@@ -6,7 +6,7 @@
     <title>我的 GitHub Pages 網站</title>
 </head>
 <body>
-    <h1 style="text-align: center;">歡迎我商店ﾉ</h1>
+    <h1 style="text-align: center;">歡迎商店ﾉ</h1>
     <p>嘿嘿</p>
 
     <h1>線上點餐系統</h1>
@@ -52,7 +52,7 @@
 
         // Add item to cart
         function addToCart(item, price) {
-            console.log(`添加商品：${item}, 價格：${price}`);  // 顯示添加的商品和價格
+            console.log(`添加商品：${item}, 價格：${price}`);
             cart.push({ item, price });
             total += price;
             updateCart();
@@ -67,15 +67,16 @@
                 cartList.innerHTML += `<li>${c.item} - $${c.price} <button onclick="removeFromCart(${index})">移除</button></li>`;
             });
             totalAmount.innerText = total;
-            console.log("購物車內容：", cart);  // 顯示當前購物車內容
-            console.log("總金額：", total);  // 顯示總金額
+            console.log("購物車內容：", cart);
+            console.log("總金額：", total);
         }
 
         // Remove item from cart
         function removeFromCart(index) {
-            total -= cart[index].price;
-            cart.splice(index, 1);
-            updateCart();
+            console.log("移除商品索引：", index);  // 確認移除的是哪個商品
+            total -= cart[index].price;  // 減去商品價格
+            cart.splice(index, 1);  // 移除商品
+            updateCart();  // 更新購物車顯示
         }
 
         // Generate order ID
