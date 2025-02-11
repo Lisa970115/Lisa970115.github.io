@@ -8,5 +8,110 @@
 <body>
     <h1 style="text-align: center;">歡迎商店ﾉ</h1>
     <p >嘿嘿</p>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上點餐</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .menu-item {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
+        }
+        #cart {
+            margin-top: 20px;
+            padding: 10px;
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>線上點餐系統</h1>
+
+    <div id="menu">
+        <div class="menu-item">
+            <h2>漢堡</h2>
+            <p>價格：$100</p>
+            <button onclick="addToCart('漢堡', 100)">加入購物車</button>
+        </div>
+        <div class="menu-item">
+            <h2>薯條</h2>
+            <p>價格：$50</p>
+            <button onclick="addToCart('薯條', 50)">加入購物車</button>
+        </div>
+    </div>
+
+    <div id="cart">
+        <h2>購物車</h2>
+        <ul id="cart-items"></ul>
+        <p>總金額：$<span id="total">0</span></p>
+        <button onclick="checkout()">提交訂單</button>
+    </div>
+
+    <div id="order-info" style="display: none; margin-top: 20px;">
+        <h2>訂單提交成功！</h2>
+        <p>您的訂單編號是：<strong id="order-id"></strong></p>
+    </div>
+
+    <script>
+        let cart = [];
+        let total = 0;
+
+        function addToCart(item, price) {
+            cart.push({ item, price });
+            total += price;
+            updateCart();
+        }
+
+        function updateCart() {
+            let cartList = document.getElementById('cart-items');
+            let totalAmount = document.getElementById('total');
+            cartList.innerHTML = "";
+            cart.forEach((c, index) => {
+                cartList.innerHTML += `<li>${c.item} - $${c.price} <button onclick="removeFromCart(${index})">移除</button></li>`;
+            });
+            totalAmount.innerText = total;
+        }
+
+        function removeFromCart(index) {
+            total -= cart[index].price;
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function generateOrderId() {
+            let now = new Date();
+            let timestamp = now.getFullYear().toString() +
+                            (now.getMonth() + 1).toString().padStart(2, '0') +
+                            now.getDate().toString().padStart(2, '0') +
+                            now.getHours().toString().padStart(2, '0') +
+                            now.getMinutes().toString().padStart(2, '0') +
+                            now.getSeconds().toString().padStart(2, '0');
+            let randomNum = Math.floor(Math.random() * 900) + 100; // 產生 100-999 之間的隨機數
+            return `ORD-${timestamp}-${randomNum}`;
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert("購物車是空的，請選擇商品！");
+                return;
+            }
+
+            let orderId = generateOrderId();
+            document.getElementById("order-id").innerText = orderId;
+            document.getElementById("order-info").style.display = "block";
+
+            // 清空購物車
+            cart = [];
+            total = 0;
+            updateCart();
+        }
+    </script>
+
 </body>
 </html>
