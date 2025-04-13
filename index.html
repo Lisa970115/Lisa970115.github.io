@@ -2,106 +2,144 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>小吃攤線上點餐</title>
+  <title>214方來財</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: "微軟正黑體", sans-serif;
       background-color: #fff8f0;
+      color: #333;
+      text-align: center;
+      padding: 30px;
     }
     h1 {
-      color: #d43f3a;
+      font-size: 2em;
+      color: #d35400;
     }
-    .menu-item {
-      margin-bottom: 20px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      background-color: #fff;
-      border-radius: 5px;
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
     }
-    .item-name {
-      font-size: 18px;
-      font-weight: bold;
+    .item {
+      background: #fff;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      padding: 15px;
+      width: 180px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     }
-    .item-price {
-      color: #555;
+    .item h3 {
+      margin: 0;
     }
-    .order-btn {
-      margin-top: 10px;
-      padding: 5px 10px;
-      background-color: #d43f3a;
+    .item input {
+      width: 50px;
+      text-align: center;
+    }
+    button {
+      background: #d35400;
       color: white;
       border: none;
-      border-radius: 3px;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 1em;
       cursor: pointer;
     }
     #total {
-      margin-top: 30px;
-      font-size: 20px;
+      margin-top: 20px;
       font-weight: bold;
-      color: #333;
+    }
+    #status {
+      margin-top: 20px;
+      color: green;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <h1>214方來財</h1>
 
-  <h1>線上點餐</h1>
+  <div class="menu" id="menu"></div>
 
-  <div class="menu-item">
-    <div class="item-name">麻辣魚蛋</div>
-    <div class="item-price">NT$30</div>
-    <button class="order-btn" onclick="order(30)">下單</button>
-  </div>
-
-  <div class="menu-item">
-    <div class="item-name">奶酪</div>
-    <div class="item-price">NT$30</div>
-    <button class="order-btn" onclick="order(30)">下單</button>
-  </div>
-
-  <div id="total">累積消費金額：NT$0</div>
+  <div id="total">總金額：$0</div>
+  <button onclick="sendOrder()">送出訂單</button>
+  <div id="status"></div>
 
   <script>
-    let total = 0;
-    function order(price) {
-      total += price;
-      document.getElementById('total').textContent = `累積消費金額：NT$${total}`;
+    const products = [
+      { name: "台式乾拌麵", price: 45 },
+      { name: "百香果氣泡水", price: 45 },
+      { name: "蜜桃氣泡水", price: 45 },
+      { name: "滷豆乾", price: 50 },
+      { name: "奶酪", price: 30 },
+      { name: "麻辣魚蛋", price: 30 },
+    ];
+
+    const menuDiv = document.getElementById("menu");
+    products.forEach((item, index) => {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "item";
+      itemDiv.innerHTML = `
+        <h3>${item.name}</h3>
+        <p>$${item.price}</p>
+        數量：<input type="number" min="0" value="0" id="qty-${index}">
+      `;
+      menuDiv.appendChild(itemDiv);
+    });
+
+    function calculateTotal() {
+      let total = 0;
+      products.forEach((item, index) => {
+        const qty = parseInt(document.getElementById(`qty-${index}`).value) || 0;
+        total += item.price * qty;
+      });
+      document.getElementById("total").textContent = `總金額：$${total}`;
+      return total;
+    }
+
+    document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("input", calculateTotal);
+    });
+
+    function sendOrder() {
+      const orderItems = [];
+      products.forEach((item, index) => {
+        const qty = parseInt(document.getElementById(`qty-${index}`).value) || 0;
+        if (qty > 0) {
+          orderItems.push({
+            name: item.name,
+            qty: qty,
+            price: item.price
+          });
+        }
+      });
+
+      const total = calculateTotal();
+
+      if (orderItems.length === 0) {
+        document.getElementById("status").textContent = "請選擇至少一項商品";
+        return;
+      }
+
+      fetch("https://script.google.com/macros/s/AKfycbw_OnR0Q62fKRjgVRSav1eFRgIIt12TS4YnafmFhoxBsS_DUBRP4mnOtal-KxnbIO8edA/exec", { // ← 請改成你的網址
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ items: orderItems, total: total })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("status").textContent = `訂單送出成功！編號：${data.orderId}`;
+        document.querySelectorAll("input").forEach(input => input.value = 0);
+        calculateTotal();
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("status").textContent = "送出失敗，請稍後再試";
+      });
     }
   </script>
-
 </body>
 </html>
-<script>
-function sendOrder() {
-  // 這是要送出的資料（你可以根據實際餐點內容修改）
-  const orderData = {
-    items: [
-      { name: "麻辣魚蛋", qty: 1, price: 30 },
-      { name: "奶酪", qty: 2, price: 30 }
-    ],
-    total: 90
-  };
-
-  // 換成你的實際 Apps Script Web App 網址
-  const apiUrl =“ https://script.google.com/macros/s/AKfycbw_OnR0Q62fKRjgVRSav1eFRgIIt12TS4YnafmFhoxBsS_DUBRP4mnOtal-KxnbIO8edA/exec”;
-
-  fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(orderData)
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log("送出成功！", data);
-    document.getElementById("status").textContent = `訂單送出成功，編號：${data.orderId}`;
-  })
-  .catch(err => {
-    console.error("送出失敗", err);
-    document.getElementById("status").textContent = "訂單送出失敗，請再試一次";
-  });
-}
-</script>
-
